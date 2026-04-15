@@ -1,1 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aya Belgharat | AI Engineer</title>
 
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #ffffff, #f1f5f9);
+  overflow-x: hidden;
+  color: #111827;
+}
+
+/* 🌌 BACKGROUND */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* GLASS UI */
+.glass {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(34,211,238,0.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* CARD */
+.card {
+  transition: 0.3s;
+}
+.card:hover {
+  transform: translateY(-6px);
+}
+
+/* Z INDEX FIX */
+section, nav, footer {
+  position: relative;
+  z-index: 10;
+}
+
+/* CHAT */
+#chat-box {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 300px;
+  display: none;
+  z-index: 50;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🌌 AI SPACE BACKGROUND -->
+<canvas id="bg"></canvas>
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full bg-white/70 backdrop-blur-md flex justify-between px-6 py-4 z-50">
+  <h1 class="font-bold">Aya Belgharat</h1>
+  <div class="space-x-4 text-sm text-gray-600">
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="h-screen flex items-center justify-center text-center px-6">
+  <div class="glass p-10 rounded-2xl card">
+    <h1 class="text-4xl font-bold">AI & Machine Learning Engineer</h1>
+    <p class="text-gray-600 mt-3">
+      Computer Vision • Deep Learning • IoT • R&D
+    </p>
+    <p class="text-sm text-gray-500 mt-2">
+      🇨🇦 Canada AI Career Target
+    </p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="max-w-5xl mx-auto px-6 py-20">
+  <h2 class="text-2xl font-semibold mb-4">About</h2>
+  <div class="glass p-6 rounded-xl card">
+    AI Engineer specialized in Computer Vision, Deep Learning, semiconductor inspection,
+    IoT systems and predictive AI models.
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="max-w-5xl mx-auto px-6 py-20">
+  <h2 class="text-2xl font-semibold mb-4">Skills</h2>
+
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="glass p-4 rounded-xl card">Python / C++ / SQL</div>
+    <div class="glass p-4 rounded-xl card">TensorFlow / PyTorch</div>
+    <div class="glass p-4 rounded-xl card">Computer Vision / CNN / NLP</div>
+    <div class="glass p-4 rounded-xl card">IoT (ESP32, LoRa, CAN)</div>
+    <div class="glass p-4 rounded-xl card">OCR / Streamlit / Jupyter</div>
+    <div class="glass p-4 rounded-xl card">R&D / Data Annotation</div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="max-w-5xl mx-auto px-6 py-20">
+  <h2 class="text-2xl font-semibold mb-4">Experience</h2>
+
+  <div class="space-y-4">
+    <div class="glass p-5 rounded-xl card">
+      <b>IMEC Belgium</b><br>
+      ML/DL wafer defect detection + dataset annotation (SEM, TEM)
+    </div>
+
+    <div class="glass p-5 rounded-xl card">
+      <b>DRÄXLMAIER</b><br>
+      IoT embedded systems optimization (ESP8266, LoRa)
+    </div>
+
+    <div class="glass p-5 rounded-xl card">
+      <b>STEG Tunisia</b><br>
+      Industrial automation + HMI + Grafcet programming
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="max-w-5xl mx-auto px-6 py-20">
+  <h2 class="text-2xl font-semibold mb-4">Projects</h2>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="glass p-5 rounded-xl card">FactuBot AI (OCR + Chatbot)</div>
+    <div class="glass p-5 rounded-xl card">ECG IoT Monitoring</div>
+    <div class="glass p-5 rounded-xl card">Waste Classification AI</div>
+    <div class="glass p-5 rounded-xl card">Smart Parking Detection</div>
+  </div>
+</section>
+
+<!-- 🤖 CHAT BUTTON -->
+<div id="chat-btn"
+class="fixed bottom-6 right-6 bg-cyan-500 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-50">
+💬
+</div>
+
+<!-- CHAT BOX -->
+<div id="chat-box" class="glass p-3 rounded-xl">
+  <div class="font-bold text-cyan-600 mb-2">AI Assistant</div>
+  <div id="messages" class="h-40 overflow-y-auto text-sm"></div>
+  <input id="input" class="w-full p-2 border rounded mt-2" placeholder="Ask AI..." />
+</div>
+
+<!-- 🌌 THREE.JS BACKGROUND -->
+<script>
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById("bg"),alpha:true});
+
+renderer.setSize(innerWidth,innerHeight);
+camera.position.z=200;
+
+const geo=new THREE.BufferGeometry();
+const pts=[];
+
+for(let i=0;i<3000;i++){
+  pts.push((Math.random()-0.5)*900);
+  pts.push((Math.random()-0.5)*900);
+  pts.push((Math.random()-0.5)*900);
+}
+
+geo.setAttribute("position",new THREE.Float32BufferAttribute(pts,3));
+
+const mat=new THREE.PointsMaterial({color:0x22d3ee,size:1.2});
+const stars=new THREE.Points(geo,mat);
+scene.add(stars);
+
+function animate(){
+  requestAnimationFrame(animate);
+  stars.rotation.y+=0.0007;
+  renderer.render(scene,camera);
+}
+animate();
+</script>
+
+<!-- 💬 SIMPLE CHATBOT (JS) -->
+<script>
+const btn=document.getElementById("chat-btn");
+const box=document.getElementById("chat-box");
+const input=document.getElementById("input");
+const messages=document.getElementById("messages");
+
+btn.onclick=()=>box.style.display=box.style.display==="block"?"none":"block";
+
+function add(msg,type){
+  const div=document.createElement("div");
+  div.innerHTML=`<div class='p-2 my-1 rounded ${type==="user"?"bg-cyan-500 text-black":"bg-gray-200"}'>${msg}</div>`;
+  messages.appendChild(div);
+}
+
+function ai(msg){
+  msg=msg.toLowerCase();
+  if(msg.includes("skills")) return "Python, AI, CV, DL, IoT";
+  if(msg.includes("experience")) return "IMEC, DRÄXLMAIER, STEG";
+  return "AI Assistant (demo mode)";
+}
+
+input.addEventListener("keypress",(e)=>{
+  if(e.key==="Enter"){
+    add(input.value,"user");
+    add(ai(input.value),"bot");
+    input.value="";
+  }
+});
+</script>
+
+<!-- FOOTER -->
+<footer class="mt-20 border-t bg-white/70 backdrop-blur-md">
+  <div class="max-w-6xl mx-auto px-6 py-10 flex justify-between text-sm">
+    <p>© 2026 Aya Belgharat</p>
+    <p>AI Engineer Portfolio</p>
+  </div>
+</footer>
+
+</body>
+</html>
